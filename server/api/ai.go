@@ -60,7 +60,7 @@ func callGeminiAPI(text string, apiKey string) (string, error) {
 		return "", err
 	}
 
-	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-pro:generateContent?key=" + apiKey
+	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(bodyBytes))
 	if err != nil {
 		return "", err
