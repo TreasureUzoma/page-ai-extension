@@ -127,7 +127,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
         summaryOutput.textContent = "";
 
         try {
-          const response = await fetch("https://treasurepageai.vercel.app/ai", {
+          const response = await fetch("https://treasurepageai.vercel.app/api/ai", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
