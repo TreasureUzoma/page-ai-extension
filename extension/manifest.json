@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Page AI",
+  "description": "Automatically summarize all text on the webpage",
+  "version": "0.0.1",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["https://treasurepageai.vercel.app/api/ai"],
+  "action": {
+    "default_title": "Page AI Summarizer",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

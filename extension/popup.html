@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Page AI Summary</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        width: 480px;
+        min-height: 320px;
+        background: linear-gradient(to bottom right, #f8fafc, #eff6ff, #eef2ff);
+        color: #334155;
+        padding: 24px;
+        user-select: text;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+        position: relative;
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .icon-container {
+        position: relative;
+      }
+
+      .icon {
+        width: 24px;
+        height: 24px;
+        color: #2563eb;
+      }
+
+      .icon-dot {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 12px;
+        height: 12px;
+        background: linear-gradient(to right, #3b82f6, #8b5cf6);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      #title {
+        font-size: 20px;
+        font-weight: 600;
+        background: linear-gradient(to right, #2563eb, #7c3aed);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+
+      .status-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding: 8px 16px;
+        background-color: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(4px);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .status-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #64748b;
+      }
+
+      .status-icon {
+        width: 16px;
+        height: 16px;
+      }
+
+      #loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 0;
+      }
+
+      .spinner-container {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 16px;
+      }
+
+      .spinner-outer {
+        position: absolute;
+        width: 48px;
+        height: 48px;
+        border: 4px solid #dbeafe;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .spinner-inner {
+        position: absolute;
+        width: 48px;
+        height: 48px;
+        border: 4px solid transparent;
+        border-right-color: #a78bfa;
+        border-radius: 50%;
+        animation: spin 1.5s linear infinite reverse;
+      }
+
+      .loading-text {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #64748b;
+      }
+
+      .loading-subtext {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      .summary-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .summary-card {
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(4px);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1);
+      }
+
+      .summary-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #10b981;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      .status-dot.error {
+        background-color: #ef4444;
+      }
+
+      .summary-status {
+        font-size: 14px;
+        font-weight: 500;
+        color: #475569;
+      }
+
+      #summary {
+        color: #334155;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        font-size: 14px;
+        max-height: 200px;
+        overflow-y: auto;
+        padding-right: 8px;
+        word-wrap: break-word;
+      }
+
+      #summary::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      #summary::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      #summary::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+        border-radius: 3px;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        outline: none;
+      }
+
+      .btn:hover {
+        transform: scale(1.02);
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-primary {
+        background: linear-gradient(to right, #3b82f6, #4f46e5);
+        color: white;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: linear-gradient(to right, #2563eb, #4338ca);
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+      }
+
+      .btn-secondary {
+        background-color: rgba(255, 255, 255, 0.8);
+        color: #475569;
+        border: 1px solid #e2e8f0;
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        background-color: white;
+        border-color: #cbd5e1;
+      }
+
+      .btn-refresh {
+        background: linear-gradient(to right, #059669, #047857);
+        color: white;
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+      }
+
+      .btn-refresh:hover:not(:disabled) {
+        background: linear-gradient(to right, #047857, #065f46);
+        box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+      }
+
+      .footer {
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: #94a3b8;
+      }
+
+      .error-state {
+        color: #dc2626;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.6;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <div class="icon-container">
+          <svg
+            class="icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M12 3l1.88 5.76a2 2 0 001.42 1.42L21 12l-5.76 1.88a2 2 0 00-1.42 1.42L12 21l-1.88-5.76a2 2 0 00-1.42-1.42L3 12l5.76-1.88a2 2 0 001.42-1.42L12 3z"
+            />
+          </svg>
+          <div class="icon-dot"></div>
+        </div>
+        <h1 id="title">AI Page Summary</h1>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-item">
+        <svg
+          class="status-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+          <polyline points="10 9 9 9 8 9" />
+        </svg>
+        <span id="status-text">Ready to analyze</span>
+      </div>
+      <div class="status-item">
+        <svg
+          class="status-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        <span id="time-estimate">~30s</span>
+      </div>
+    </div>
+
+    <div id="loading" class="hidden">
+      <div class="spinner-container">
+        <div class="spinner-outer"></div>
+        <div class="spinner-inner"></div>
+      </div>
+      <div class="loading-text">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="status-icon"
+        >
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+        </svg>
+        <span>Processing page content...</span>
+      </div>
+      <div class="loading-subtext">
+        Extracting key insights and generating summary
+      </div>
+    </div>
+
+    <div id="summary-container" class="summary-container hidden">
+      <div class="summary-card">
+        <div class="summary-header">
+          <div id="summary-status-dot" class="status-dot"></div>
+          <span id="summary-status-text" class="summary-status"
+            >Summary Ready</span
+          >
+        </div>
+        <div id="summary"></div>
+      </div>
+
+      <div class="action-buttons">
+        <button id="copy-btn" class="btn btn-primary">Copy Summary</button>
+        <button id="refresh-btn" class="btn btn-refresh">Refresh</button>
+      </div>
+    </div>
+
+    <div class="footer">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M12 3l1.88 5.76a2 2 0 001.42 1.42L21 12l-5.76 1.88a2 2 0 00-1.42 1.42L12 21l-1.88-5.76a2 2 0 00-1.42-1.42L3 12l5.76-1.88a2 2 0 001.42-1.42L12 3z"
+        />
+      </svg>
+      <span>Powered by AI • Privacy-first processing</span>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
