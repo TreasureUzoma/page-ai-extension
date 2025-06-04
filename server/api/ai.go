@@ -49,7 +49,7 @@ func callGeminiAPI(text string, apiKey string) (string, error) {
 				Parts: []struct {
 					Text string `json:"text"`
 				}{
-					{Text: "Summarize the following text:\n" + text},
+					{Text: "Summarize the following text, no markdow-type response:\n" + text},
 				},
 			},
 		},
